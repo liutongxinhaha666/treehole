@@ -1,0 +1,4 @@
+.env
+*.bak*.html
+node_modules/
+.wrangler/
