@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="theme-color" content="#FFF2F5">
+<title>星星の树洞</title>
+<style>
+/* 设计锁：奶油粉底 / 单一玫瑰粉强调 / 玻璃卡 / 圆角26-16-999 / 动要轻 */
+:root{
+  --bg:#FFF7F3;--card:rgba(255,255,255,.68);--field:rgba(255,255,255,.75);
+  --accent:#E56B8C;--accent-deep:#C2668A;
+  --text:#4E3B42;--soft:#A78A92;--line:#F3D9E2;
+  --r-card:26px;--r-field:16px;--r-pill:999px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,'PingFang SC','Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;padding:26px 16px;min-height:100%;overflow-x:hidden;position:relative}
+::selection{background:rgba(229,107,140,.18)}
+.sky{position:fixed;inset:-15%;z-index:0;pointer-events:none;filter:blur(12px);background:radial-gradient(42% 38% at 18% 16%,rgba(255,183,206,.8),transparent 70%),radial-gradient(36% 32% at 86% 10%,rgba(255,216,167,.6),transparent 70%),radial-gradient(46% 42% at 80% 88%,rgba(255,196,220,.6),transparent 70%),radial-gradient(36% 34% at 10% 82%,rgba(255,238,180,.55),transparent 70%);animation:drift 26s ease-in-out infinite alternate}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(2.5%,-2%) scale(1.06)}100%{transform:translate(-2.5%,2%) scale(1.03)}}
+.petals{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.petal{position:absolute;top:-6vh;background:linear-gradient(135deg,#FFD3E0,#F7B8CB);border-radius:62% 38% 55% 45%/60% 45% 55% 40%;opacity:0;animation:fall linear infinite}
+@keyframes fall{0%{transform:translate3d(0,-6vh,0) rotate(0deg);opacity:0}8%{opacity:.8}50%{transform:translate3d(26px,52vh,0) rotate(180deg)}92%{opacity:.65}100%{transform:translate3d(-18px,106vh,0) rotate(360deg);opacity:0}}
+.card{position:relative;z-index:2;width:100%;max-width:430px;background:var(--card);-webkit-backdrop-filter:blur(20px) saturate(1.25);backdrop-filter:blur(20px) saturate(1.25);border:1px solid rgba(255,255,255,.85);border-radius:var(--r-card);padding:32px 24px 24px;box-shadow:0 24px 60px rgba(229,107,140,.16),inset 0 1px 0 rgba(255,255,255,.9)}
+#form-area,#ok-area,#lookup-area{animation:viewIn .5s cubic-bezier(.2,.8,.3,1) both}
+@keyframes viewIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.moon{text-align:center;font-size:40px;line-height:1;margin-bottom:14px;animation:breathe 5.5s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.05)}}
+h1{font-family:Georgia,'Songti SC','Noto Serif SC',serif;text-align:center;font-size:22px;font-weight:600;letter-spacing:6px;color:var(--text)}
+.divider{width:44px;height:1px;margin:14px auto 18px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.7}
+.sub{text-align:center;font-size:13px;color:var(--soft);line-height:1.9;margin-bottom:18px}
+.lbl{display:block;font-size:12px;color:var(--soft);letter-spacing:1px;margin:14px 2px 7px}
+textarea{width:100%;min-height:140px;resize:none;border:1px solid var(--line);border-radius:var(--r-field);padding:14px 15px;font-size:16px;line-height:1.8;color:var(--text);background:var(--field);outline:none;font-family:inherit;transition:border-color .25s,box-shadow .25s,background .25s}
+textarea::placeholder,.field-input::placeholder{color:#C9AEB6}
+textarea:focus,.field-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(229,107,140,.13);background:#fff}
+.field-input{width:100%;border:1px solid var(--line);border-radius:var(--r-field);padding:13px 15px;font-size:15px;font-family:inherit;color:var(--text);background:var(--field);outline:none;transition:border-color .25s,box-shadow .25s,background .25s}
+.meta-row{text-align:right;margin-top:6px}
+.count{font-size:11px;color:var(--soft)}
+.hint{font-size:11.5px;color:var(--soft);line-height:1.8;margin:8px 2px 0}
+.err{display:none;font-size:12.5px;color:#B4472F;background:#FFF0EC;border:1px solid #F5C9BE;border-radius:10px;padding:10px 12px;margin-top:12px;line-height:1.7}
+.err.show{display:block}
+.btn{margin-top:18px;width:100%;border:1px solid rgba(255,255,255,.8);cursor:pointer;padding:15px;border-radius:var(--r-field);font-size:16px;font-weight:700;letter-spacing:3px;color:#8A3050;font-family:inherit;background:linear-gradient(135deg,#FBD0DD,#F9C1D3 45%,#F5B4CA);box-shadow:0 12px 26px rgba(229,107,140,.22),inset 0 1px 0 rgba(255,255,255,.9);transition:transform .12s ease,box-shadow .25s}
+.btn:active{transform:scale(.98);box-shadow:0 6px 16px rgba(229,107,140,.2)}
+.btn:disabled{opacity:.55}
+.btn.ghost{background:rgba(255,255,255,.5);color:var(--accent-deep);border:1px solid var(--line);box-shadow:none;font-size:14px;font-weight:500;letter-spacing:1.5px;padding:13px;margin-top:10px;transition:background .25s,transform .12s}
+.btn.ghost:active{background:#fff}
+.tip{text-align:center;font-size:11.5px;color:var(--soft);margin-top:16px;line-height:1.8}
+.notice{text-align:left;font-size:12px;color:var(--text);line-height:1.85;margin-top:14px;padding:11px 14px;border-radius:var(--r-field);background:rgba(255,255,255,.62);border:1px solid var(--line);border-left:2px solid var(--accent)}
+.notice b{color:var(--accent-deep);font-weight:600}
+.ok{text-align:center;padding:10px 2px 2px}
+.ok .big{font-size:44px;display:inline-block;animation:bloom .7s cubic-bezier(.2,1.2,.4,1) both}
+@keyframes bloom{from{opacity:0;transform:scale(.4) rotate(-12deg)}to{opacity:1;transform:none}}
+.ok .t{font-size:18px;font-weight:600;letter-spacing:3px;margin:12px 0 10px;color:var(--text)}
+.ok .d{font-size:13.5px;color:var(--soft);line-height:1.9}
+.no{margin:18px auto 0;display:inline-block;padding:12px 24px;border-radius:var(--r-field);border:1px dashed #EFC3D2;background:rgba(255,255,255,.6)}
+.lbl2{display:block;font-size:11px;color:var(--soft);letter-spacing:2px}
+.num{display:block;font-size:30px;font-weight:700;color:var(--accent-deep);letter-spacing:2px;line-height:1.4}
+.bless{margin-top:18px;font-size:13px;line-height:1.9;color:var(--text);opacity:.92}
+.row{margin-top:20px;display:flex;gap:10px;justify-content:center}
+.again{font-size:13px;color:var(--accent-deep);font-family:inherit;background:rgba(255,255,255,.55);border:1px solid var(--line);padding:10px 22px;border-radius:var(--r-pill);cursor:pointer;transition:background .25s,transform .12s}
+.again:active{transform:scale(.96);background:#fff}
+.hide{display:none!important}
+.quote{text-align:left;margin-top:18px;padding:14px 16px;border-radius:var(--r-field);background:rgba(255,255,255,.72);border:1px solid var(--line);border-left:2px solid var(--accent);font-size:14px;line-height:1.9;color:var(--text);white-space:pre-wrap;word-break:break-word}
+.quote .m{font-size:11px;color:var(--soft);margin-bottom:6px}
+.replybox{text-align:left;margin-top:12px;padding:14px 16px;border-radius:var(--r-field);background:rgba(255,243,246,.85);border:1px solid #F7D9E2;font-size:14px;line-height:1.9;color:var(--text);white-space:pre-wrap;word-break:break-word}
+.replybox .rh{font-size:11.5px;color:var(--accent-deep);letter-spacing:2px;margin-bottom:6px}
+.waiting{margin-top:12px;font-size:13px;color:var(--soft);line-height:1.9;padding:12px 14px;border-radius:var(--r-field);border:1px dashed #EFCBD8;background:rgba(255,255,255,.55)}
+.back{display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--soft);cursor:pointer;padding:8px}
+/* —— 心情标签 chips（多选：打勾长出 + 底色填满 + 宽度撑开） —— */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 2px}
+.chip{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:var(--r-pill);padding:9px 15px;font-size:13px;font-family:inherit;color:var(--text);cursor:pointer;box-shadow:0 4px 12px rgba(229,107,140,.08);transition:background .34s ease,color .34s ease,box-shadow .34s ease,transform .12s ease,padding .3s cubic-bezier(.2,.9,.3,1)}
+.chip .ck{width:0;opacity:0;margin-right:0;overflow:hidden;display:inline-flex;align-items:center;transform:translateX(-4px);transition:width .32s cubic-bezier(.2,.9,.3,1),opacity .26s ease,margin .32s cubic-bezier(.2,.9,.3,1),transform .32s cubic-bezier(.2,.9,.3,1)}
+.chip.on{background:linear-gradient(135deg,#FBE1EA,#F5C6D8);color:#8A3050;box-shadow:0 9px 20px rgba(229,107,140,.22),inset 0 1px 0 rgba(255,255,255,.95)}
+.chip.on .ck{width:13px;opacity:1;margin-right:6px;transform:translateX(0)}
+.chip:active{transform:scale(.965)}
+.tagcount{display:inline-block;min-width:18px;padding:0 6px;margin-left:6px;border-radius:999px;background:rgba(229,107,140,.14);color:var(--accent-deep);font-size:11px;line-height:17px;text-align:center;vertical-align:1px;transition:transform .25s}
+.tagcount.bump{transform:scale(1.28)}
+/* —— 照片 —— */
+.attach{display:flex;align-items:center;gap:10px;margin-top:8px}
+.upload{display:inline-flex;align-items:center;gap:6px;border:1px dashed #EFC3D2;background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:var(--r-pill);padding:9px 15px;font-size:13px;font-family:inherit;color:var(--accent-deep);cursor:pointer;transition:background .25s,transform .12s}
+.upload:active{transform:scale(.965);background:#fff}
+.thumb{display:none;position:relative;width:54px;height:54px;border-radius:12px;overflow:hidden;border:1px solid var(--line);box-shadow:0 6px 14px rgba(229,107,140,.16)}
+.thumb.on{display:block;animation:popIn .35s cubic-bezier(.2,1.2,.4,1) both}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .rm{position:absolute;right:2px;top:2px;width:17px;height:17px;border-radius:50%;background:rgba(78,59,66,.72);color:#fff;font-size:12px;line-height:17px;text-align:center;cursor:pointer}
+.quote-img{max-width:100%;border-radius:12px;display:block;margin-top:8px}
+/* —— 发送按钮：玻璃胶囊 + 数量徽标 —— */
+.btn{position:relative;display:flex;align-items:center;justify-content:center;border-radius:var(--r-pill)}
+.btn .badge{position:absolute;right:12px;top:50%;transform:translateY(-50%);min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:rgba(255,255,255,.9);color:#8A3050;font-size:11px;font-weight:700;letter-spacing:0;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(229,107,140,.2);transition:transform .22s}
+.btn .badge.bump{transform:translateY(-50%) scale(1.22)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.sky{filter:blur(12px)}.petal{display:none}}
+.owner{width:fit-content;margin:-4px auto 16px;padding:4px 14px;border-radius:var(--r-pill);font-size:11px;letter-spacing:3px;color:var(--accent-deep);background:rgba(255,255,255,.6);border:1px solid var(--line);text-align:center}
+.brand{position:fixed;right:14px;bottom:14px;z-index:3;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;letter-spacing:1px;color:#B4576F;border:1px solid #F0C8D6;background:rgba(255,255,255,.5);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);text-transform:uppercase;pointer-events:none}
+/* — 键盘友好：键盘弹起时，正在打的字不被遮 — */
+html{height:auto}
+body{display:block;min-height:100%;padding-bottom:calc(30px + env(safe-area-inset-bottom))}
+main.card{margin:0 auto}
+#content,#pass,#lk-id,#lk-pw{scroll-margin-top:16px;scroll-margin-bottom:170px}
+
+
+/* —— 像素小猫 · 守洞猫 v2（可拖 / 会踱步 / 双模式） —— */
+.cat-zone{position:fixed;left:12px;bottom:16px;z-index:6;cursor:grab;touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;animation:catpace 26s ease-in-out infinite}
+.cat-zone:active{cursor:grabbing}
+.cat-zone.pinned{animation:none}
+@keyframes catpace{0%{transform:translateX(0)}18%{transform:translateX(0)}50%{transform:translateX(118px)}72%{transform:translateX(118px)}100%{transform:translateX(0)}}
+.cat-body{position:relative;width:60px;height:50px;animation:catbob 3.4s ease-in-out infinite}
+@keyframes catbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.cat-px{position:absolute;left:0;top:0;width:5px;height:5px;background:transparent;box-shadow:5px 0px 0 0 #F6B76A,50px 0px 0 0 #F6B76A,5px 5px 0 0 #F6B76A,10px 5px 0 0 #F6B76A,45px 5px 0 0 #F6B76A,50px 5px 0 0 #F6B76A,5px 10px 0 0 #F6B76A,10px 10px 0 0 #F6B76A,15px 10px 0 0 #F6B76A,40px 10px 0 0 #F6B76A,45px 10px 0 0 #F6B76A,50px 10px 0 0 #F6B76A,5px 15px 0 0 #F6B76A,10px 15px 0 0 #F6B76A,15px 15px 0 0 #F6B76A,20px 15px 0 0 #F6B76A,25px 15px 0 0 #F6B76A,30px 15px 0 0 #F6B76A,35px 15px 0 0 #F6B76A,40px 15px 0 0 #F6B76A,45px 15px 0 0 #F6B76A,50px 15px 0 0 #F6B76A,5px 20px 0 0 #F6B76A,10px 20px 0 0 #F6B76A,15px 20px 0 0 #F6B76A,20px 20px 0 0 #F6B76A,25px 20px 0 0 #F6B76A,30px 20px 0 0 #F6B76A,35px 20px 0 0 #F6B76A,40px 20px 0 0 #F6B76A,45px 20px 0 0 #F6B76A,50px 20px 0 0 #F6B76A,5px 25px 0 0 #F6B76A,10px 25px 0 0 #F6B76A,15px 25px 0 0 #4A342B,20px 25px 0 0 #F6B76A,25px 25px 0 0 #F6B76A,30px 25px 0 0 #F6B76A,35px 25px 0 0 #F6B76A,40px 25px 0 0 #4A342B,45px 25px 0 0 #F6B76A,50px 25px 0 0 #F6B76A,5px 30px 0 0 #F6B76A,10px 30px 0 0 #F6B76A,15px 30px 0 0 #F6B76A,20px 30px 0 0 #FFF4E8,25px 30px 0 0 #E988A8,30px 30px 0 0 #E988A8,35px 30px 0 0 #FFF4E8,40px 30px 0 0 #F6B76A,45px 30px 0 0 #F6B76A,50px 30px 0 0 #F6B76A,5px 35px 0 0 #F6B76A,10px 35px 0 0 #F8C3D4,15px 35px 0 0 #F6B76A,20px 35px 0 0 #F6B76A,25px 35px 0 0 #F6B76A,30px 35px 0 0 #F6B76A,35px 35px 0 0 #F6B76A,40px 35px 0 0 #F6B76A,45px 35px 0 0 #F8C3D4,50px 35px 0 0 #F6B76A,10px 40px 0 0 #F6B76A,15px 40px 0 0 #F6B76A,20px 40px 0 0 #F6B76A,25px 40px 0 0 #F6B76A,30px 40px 0 0 #F6B76A,35px 40px 0 0 #F6B76A,40px 40px 0 0 #F6B76A,45px 40px 0 0 #F6B76A,15px 45px 0 0 #F6B76A,20px 45px 0 0 #F6B76A,25px 45px 0 0 #F6B76A,30px 45px 0 0 #F6B76A,35px 45px 0 0 #F6B76A,40px 45px 0 0 #F6B76A}
+.cat-eye{position:absolute;width:5px;height:5px;background:transparent;transition:background .3s}
+.cat-zone.owner .cat-eye{background:#E56B8C}
+.cat-bubble{position:absolute;left:0;bottom:100%;margin-bottom:8px;max-width:210px;width:max-content;background:rgba(255,255,255,.95);border:1px solid #F0C8D6;border-radius:14px;padding:8px 12px;font-size:12.5px;line-height:1.7;color:#8A3050;box-shadow:0 10px 24px rgba(229,107,140,.22);opacity:0;pointer-events:none;transform:translateY(6px);transition:opacity .25s,transform .25s cubic-bezier(.2,1.2,.4,1);text-align:center}
+.cat-bubble.on{opacity:1;transform:translateY(0)}
+.cat-zone.owner .cat-bubble{color:#B93B67;border-color:#EDB6CB}
+.cat-name{display:block;text-align:center;margin-top:6px;font-size:10px;letter-spacing:3px;color:#CBAEB8}
+@media (prefers-reduced-motion:reduce){.cat-body{animation:none!important}.cat-zone{animation:none!important}}
+
+</style>
+
+</head>
+<body>
+<div class="sky"></div>
+<div class="petals" id="petals"></div>
+<div class="brand">洞</div>
+<div class="cat-zone" id="cat" aria-label="守洞猫，戳一戳或拖走它">
+  <div class="cat-bubble" id="cat-bubble"></div>
+  <div class="cat-body"><div class="cat-px"></div><i class="cat-eye" style="left:15px;top:25px"></i><i class="cat-eye" style="left:40px;top:25px"></i></div>
+  <span class="cat-name">守洞猫</span>
+</div>
+<main class="card">
+  <div class="moon" id="moon">🌸</div>
+  <h1 id="title">星星の树洞</h1>
+  <div class="divider"></div>
+  <p class="owner">✦ 创始人 · 你的名字 ✦</p>
+
+  <section id="form-area">
+    <p class="sub">你不想当面说的，写这儿就行。<br>我不问你是谁，也不会去猜。</p>
+    <label class="lbl" for="content">想说的话</label>
+    <textarea id="content" placeholder="写点什么吧，我会看，会回。"></textarea>
+    <div class="meta-row"><span class="count" id="count">0</span></div>
+    <label class="lbl" for="pass">只有你记得的密码</label>
+    <input class="field-input" id="pass" type="password" autocomplete="off" placeholder="至少 4 位">
+    <p class="hint">之后凭这串密码回来看我的回信，忘了就找不回来了。</p>
+    <label class="lbl">此刻的心情<span class="tagcount" id="mcount">0</span></label>
+    <div class="chips" id="chips"></div>
+    <label class="lbl" for="pick">要不要放一张照片</label>
+    <div class="attach">
+      <button type="button" class="upload" id="pick">📷 选一张照片</button>
+      <div class="thumb" id="thumb"><img id="thumb-img" alt=""><span class="rm" id="rm">×</span></div>
+    </div>
+    <input type="file" id="file" accept="image/*" hidden>
+    <p class="hint">照片会先压小一点再送进去，传得动。</p>
+    <p class="err" id="err-send" role="alert"></p>
+    <button class="btn" id="send"><span id="send-label">投进树洞</span><span class="badge" id="badge">0</span></button>
+    <button class="btn ghost" id="to-lookup">我有回信，去看看</button>
+    <p class="notice">☾ 每晚 22:30，我会来看你的话。回信可能慢一点，但一定会有。<br>如果你此刻很难撑、有伤害自己的念头——<b>别等回信</b>，找辅导员，或打 <b>12356</b>（全国心理援助热线，24 小时）。</p>
+    <p class="tip">完全匿名 · 不记录你的身份<br>说出来，就轻一点</p>
+  </section>
+
+  <section id="ok-area" class="ok hide">
+    <div class="big">🌿</div>
+    <p class="t">收到啦</p>
+    <p class="d">你的话已经落进树洞。<br>我会认真看，也会认真回。</p>
+    <div class="no"><span class="lbl2">你 的 编 号</span><span class="num" id="my-no">—</span></div>
+    <p class="bless" id="bless"></p>
+    <div class="row"><button class="again" id="again">再说一句</button><button class="again" id="to-lookup2">去看回信</button></div>
+  </section>
+
+  <section id="lookup-area" class="hide">
+    <p class="sub">输入你的编号和密码，<br>我回给你的话才会显出来。</p>
+    <label class="lbl" for="lk-id">编号</label>
+    <input class="field-input" id="lk-id" type="number" inputmode="numeric" autocomplete="off" placeholder="例如 12">
+    <label class="lbl" for="lk-pw">密码</label>
+    <input class="field-input" id="lk-pw" type="password" autocomplete="off" placeholder="你设的密码">
+    <p class="err" id="err-lookup" role="alert"></p>
+    <button class="btn" id="lookup-btn">查看回信</button>
+    <div id="lookup-result"></div>
+    <p class="tip">编号和密码只有你自己知道<br>别人输不对，什么都看不见</p>
+  </section>
+
+  <span class="back" id="back-home">← 回去写一句</span>
+</main>
+<script>
+const SUPABASE_URL='在这里填你的 Supabase 项目 URL';
+const SUPABASE_KEY='在这里填你的 anon public key';
+const BLESSINGS=['愿你今晚睡得踏实，明天醒来有光。','星星有很多，你不孤单。','愿你天天开心，烦恼都绕道走。','你值得被温柔对待，包括你自己。','难过会过去的，就像所有的天气。','你很好，真的，别怀疑。','深呼吸，一切都会慢慢好起来的。','愿你想说的话，都有人认真听。','今天也辛苦了，抱抱你。','愿你被这个世界，轻轻地爱着。'];
+(function(){const box=document.getElementById('petals'),n=12;for(let i=0;i<n;i++){const p=document.createElement('i');p.className='petal';const sz=(8+Math.random()*8).toFixed(1);p.style.left=(Math.random()*100).toFixed(2)+'%';p.style.width=sz+'px';p.style.height=sz+'px';p.style.animationDuration=(9+Math.random()*8).toFixed(2)+'s';p.style.animationDelay=(-Math.random()*16).toFixed(2)+'s';box.appendChild(p);}})();
+const $=id=>document.getElementById(id);
+const elForm=$('form-area'),elOk=$('ok-area'),elLookup=$('lookup-area');
+const ta=$('content'),pwIn=$('pass'),sendBtn=$('send'),cnt=$('count'),blessEl=$('bless');
+const titleEl=$('title'),moonEl=$('moon');
+const sendLbl=$('send-label'),badge=$('badge'),mcount=$('mcount');
+const MOODS=['累','难过','委屈','生气','焦虑','迷茫','开心','想家','说不清'];
+let picked=[],photoBlob=null,thumbURL='';
+const chipsBox=$('chips');
+MOODS.forEach(m=>{const b=document.createElement('button');b.type='button';b.className='chip';b.innerHTML='<i class="ck">✓</i><span>'+m+'</span>';b.addEventListener('click',()=>{const i=picked.indexOf(m);if(i<0){picked.push(m);}else{picked.splice(i,1);}b.classList.toggle('on',picked.indexOf(m)>=0);mcount.textContent=picked.length;mcount.classList.remove('bump');void mcount.offsetWidth;mcount.classList.add('bump');setTimeout(()=>mcount.classList.remove('bump'),260);});chipsBox.appendChild(b);});
+function syncBadge(){badge.textContent=ta.value.length;badge.classList.remove('bump');void badge.offsetWidth;badge.classList.add('bump');setTimeout(()=>badge.classList.remove('bump'),220);}
+ta.addEventListener('input',()=>{cnt.textContent=ta.value.length;syncBadge();});
+async function compressImg(file){const img=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=fr.result;};fr.onerror=rej;fr.readAsDataURL(file);});let w=img.width,h=img.height;const max=1600;if(w>max||h>max){const s=Math.min(max/w,max/h);w=Math.round(w*s);h=Math.round(h*s);}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);let q=.8,blob=null;for(let i=0;i<9;i++){blob=await new Promise(r=>c.toBlob(r,'image/jpeg',q));if(!blob)throw new Error('blob fail');if(blob.size<=350000)break;q-=.08;}return blob;}
+async function uploadPhoto(blob){const name='p_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)+'.jpg';const r=await fetch(api('/storage/v1/object/treehole/'+name),{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'image/jpeg','x-upsert':'true','Cache-Control':'public, max-age=31536000'},body:blob});if(!r.ok)throw new Error('UP '+r.status);return api('/storage/v1/object/public/treehole/'+name);}
+const fileIn=$('file'),thumb=$('thumb'),thumbImg=$('thumb-img'),pickBtn=$('pick');
+pickBtn.addEventListener('click',()=>fileIn.click());
+$('rm').addEventListener('click',()=>{photoBlob=null;if(thumbURL){URL.revokeObjectURL(thumbURL);thumbURL='';}fileIn.value='';thumb.classList.remove('on');thumbImg.removeAttribute('src');pickBtn.textContent='📷 选一张照片';});
+fileIn.addEventListener('change',async()=>{const f=fileIn.files&&fileIn.files[0];if(!f)return;pickBtn.textContent='📷 正在处理…';try{photoBlob=await compressImg(f);if(thumbURL)URL.revokeObjectURL(thumbURL);thumbURL=URL.createObjectURL(photoBlob);thumbImg.src=thumbURL;thumb.classList.add('on');pickBtn.textContent='📷 换一张';}catch(e){photoBlob=null;thumb.classList.remove('on');pickBtn.textContent='📷 选一张照片';showErr($('err-send'),'这张图太倔了，压不动，换一张试试。');}});
+const configured=()=>!SUPABASE_URL.includes('在这里')&&!SUPABASE_KEY.includes('在这里');
+const api=p=>SUPABASE_URL.replace(/\/+$/,'')+p;
+const hd=()=>({'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'});
+async function hashPw(str){try{if(window.crypto&&crypto.subtle&&crypto.subtle.digest){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('xtsd::'+str));return 's'+[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');}}catch(e){}let h=5381;const s='xtsd::'+str;for(let i=0;i<s.length;i++){h=((h<<5)+h)^s.charCodeAt(i);}return 'f'+(h>>>0).toString(16);}
+function esc(s){const segs=String(s).split('<<IMG>>');let out=segs[0].split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;');for(let i=1;i<segs.length;i++){const u=segs[i].trim();if(u)out+="<img class='quote-img' alt='照片' src='"+u.replace(/["'<> ]/g,'')+"'>";}return out;}
+function renderContent(s){const parts=String(s).split('<<IMG>>');let h=esc(parts[0]);for(let i=1;i<parts.length;i++){const u=parts[i].trim();if(u)h+="<img class='quote-img' alt='照片' src='"+u.replace(/["'<> ]/g,'')+"'>";}return h;}
+function showErr(el,msg){el.textContent=msg;el.classList.add('show');}
+function clearErr(el){el.textContent='';el.classList.remove('show');}
+function showOnly(el){[elForm,elOk,elLookup].forEach(x=>x.classList.add('hide'));el.classList.remove('hide');el.style.animation='none';void el.offsetWidth;el.style.animation='';}
+function resetPicks(){ta.value='';cnt.textContent='0';badge.textContent='0';pwIn.value='';picked=[];document.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));mcount.textContent='0';photoBlob=null;if(thumbURL){URL.revokeObjectURL(thumbURL);thumbURL='';}fileIn.value='';thumb.classList.remove('on');thumbImg.removeAttribute('src');pickBtn.textContent='📷 选一张照片';}
+function showSuccess(no){resetPicks();$('my-no').textContent=no;blessEl.textContent=BLESSINGS[Math.floor(Math.random()*BLESSINGS.length)];showOnly(elOk);}
+function toLookup(){titleEl.textContent='树洞回信';moonEl.textContent='💌';$('lookup-result').innerHTML='';$('lk-id').value='';$('lk-pw').value='';clearErr($('err-lookup'));showOnly(elLookup);}
+function toHome(){titleEl.textContent='星星の树洞';moonEl.textContent='🌸';showOnly(elForm);}
+sendBtn.addEventListener('click',async()=>{let text=ta.value.trim();const pw=pwIn.value.trim();const err=$('err-send');clearErr(err);if(!text&&!photoBlob){showErr(err,'还没写呢，写点什么、或者放张照片，再投吧。');ta.focus();return;}if(pw.length<4){showErr(err,'密码至少 4 位，不然别人太容易猜到了。');pwIn.focus();return;}if(text&&picked.length)text='【心情】'+picked.join(' · ')+'\n'+text;sendBtn.disabled=true;try{let imgUrl='';if(photoBlob){sendLbl.textContent='正在传照片…';imgUrl=await uploadPhoto(photoBlob);}sendLbl.textContent='正在送…';const payload=(text?text+'\n':'')+(imgUrl?'<<IMG>>'+imgUrl:'');let no;if(configured()){const r=await fetch(api('/rest/v1/rpc/submit_message'),{method:'POST',headers:hd(),body:JSON.stringify({p_content:payload,p_pass_hash:await hashPw(pw)})});if(!r.ok)throw new Error('HTTP '+r.status);no=await r.json();}else{await new Promise(res=>setTimeout(res,500));no=Math.floor(Math.random()*90)+10;}showSuccess(no);}catch(e){showErr(err,'没送出去，网络打了个盹，再试一次。');console.error(e);}finally{sendBtn.disabled=false;sendLbl.textContent='投进树洞';}});
+$('lookup-btn').addEventListener('click',async()=>{const id=($('lk-id').value||'').trim();const pw=$('lk-pw').value.trim();const box=$('lookup-result');const err=$('err-lookup');clearErr(err);box.innerHTML='';if(!id||!pw){showErr(err,'编号和密码都要填哦。');return;}const btn=$('lookup-btn');btn.disabled=true;btn.textContent='正在找…';try{let rows;if(configured()){const r=await fetch(api('/rest/v1/rpc/check_reply'),{method:'POST',headers:hd(),body:JSON.stringify({p_code:id,p_pass_hash:await hashPw(pw)})});if(!r.ok)throw new Error('HTTP '+r.status);rows=await r.json();}else{await new Promise(res=>setTimeout(res,400));rows=[{content:'（演示）这是我写下的那句话。',reply:'（演示）这是回给你的话，先别急着难过。',created_at:new Date().toISOString()}];}if(!rows||!rows.length){box.innerHTML="<div class='waiting'>编号或密码对不上，再想想？</div>";}else{const m=rows[0];const when=m.created_at?new Date(m.created_at).toLocaleDateString('zh-CN'):'';let html="<div class='quote'><div class='m'>你说 · "+when+"</div>"+esc(m.content)+"</div>";if(m.reply){(String(m.reply).split(/\n\s*\n/)).forEach(function(s,i){s=(s||'').trim();if(!s)return;html+="<div class='replybox'><div class='rh'>"+(i===0?'我 回 你':'· 补 充')+"</div>"+esc(s)+"</div>";});}else{html+="<div class='waiting'>我还没回这条。看到了会回的，你先别急。</div>";}box.innerHTML=html;}}catch(e){box.innerHTML="<div class='waiting'>网络不太顺，等会儿再试。</div>";console.error(e);}finally{btn.disabled=false;btn.textContent='查看回信';}});
+$('again').addEventListener('click',()=>{toHome();ta.focus();});
+$('to-lookup').addEventListener('click',toLookup);
+$('to-lookup2').addEventListener('click',toLookup);
+$('back-home').addEventListener('click',toHome);
+/* —— 键盘一弹，正打的字必须看得见 —— */
+(function(){
+  var vv=window.visualViewport;
+  function bring(){
+    var el=document.activeElement;if(!el)return;
+    var t=(el.tagName||'').toUpperCase();
+    if(t!=="TEXTAREA"&&t!=="INPUT")return;
+    try{el.scrollIntoView({block:"center",behavior:"smooth"});}catch(e){try{el.scrollIntoView();}catch(e2){}}
+  }
+  document.addEventListener("focusin",function(){setTimeout(bring,340);});
+  if(vv){vv.addEventListener("resize",function(){setTimeout(bring,120);});vv.addEventListener("scroll",function(){setTimeout(bring,60);});}
+})();
+
+
+/* —— 守洞猫 v2：可拖动 / 会踱步 / 两种说话模式 —— */
+(function(){
+  var Z=document.getElementById('cat'),B=document.getElementById('cat-bubble');
+  if(!Z||!B)return;
+  var PUB=["喵～", "写下来吧，猫听着呢。", "别急，慢慢说，猫不催。", "嗯嗯，猫在。", "说出来，就轻一点啦。", "你已经很勇敢了。", "难过了就靠一会儿，猫陪着你。", "这些话猫替你收好了，不告诉别人。", "今天也辛苦啦，摸摸头。", "想说什么都行，猫一直都在。", "深呼吸——好，慢慢讲。", "不用装作没事，这儿没人看你。"];
+  var PRIV_B64='';
+  var PRIV=(function(){try{return JSON.parse(decodeURIComponent(escape(atob(PRIV_B64))));}catch(e){return PUB;}})();
+  var sessionOff=false,bt=null,lpTimer=null,drag=null,lastTap=0,lastIdx=-1;
+  function isMe(){return /[?&]me=1(&|$)/.test(location.search)&&!sessionOff;}
+  if(isMe())Z.classList.add('owner');
+  function say(t){B.textContent=t;B.classList.remove('on');void B.offsetWidth;B.classList.add('on');clearTimeout(bt);bt=setTimeout(function(){B.classList.remove('on');},2800);}
+  function speak(){var a=isMe()?PRIV:PUB,i;do{i=Math.floor(Math.random()*a.length);}while(a.length>1&&i===lastIdx);lastIdx=i;say(a[i]);}
+  function txOf(el){var t=getComputedStyle(el).transform;if(!t||t==='none')return 0;var m=t.match(/matrix\(([^)]+)\)/);if(m)return parseFloat(m[1].split(',')[4])||0;var m3=t.match(/matrix3d\(([^)]+)\)/);if(m3)return parseFloat(m3[1].split(',')[12])||0;return 0;}
+  function resetPos(){Z.classList.remove('pinned');Z.style.left='';Z.style.bottom='';Z.style.transform='';Z.style.animation='';try{localStorage.removeItem('xsd_cat_pos');}catch(e){}}
+  try{var p=JSON.parse(localStorage.getItem('xsd_cat_pos')||'null');if(p&&p.l){Z.style.left=p.l;Z.style.bottom=p.b;Z.classList.add('pinned');}}catch(e){}
+  Z.addEventListener('pointerdown',function(e){
+    if(e.button&&e.button!==0)return;
+    e.preventDefault();
+    try{Z.setPointerCapture(e.pointerId);}catch(err){}
+    drag={x:e.clientX,y:e.clientY,moved:false,lp:false,l0:0,b0:0};
+    clearTimeout(lpTimer);
+    lpTimer=setTimeout(function(){
+      if(drag&&!drag.moved){drag.lp=true;
+        if(isMe()){sessionOff=true;Z.classList.remove('owner');say('好，猫先不出声了。');}
+      }
+    },1200);
+  });
+  Z.addEventListener('pointermove',function(e){
+    if(!drag)return;
+    var dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+    if(!drag.moved){
+      if(Math.abs(dx)+Math.abs(dy)<8)return;
+      drag.moved=true;clearTimeout(lpTimer);
+      var tx=txOf(Z);
+      Z.style.animation='none';Z.style.transform='none';
+      drag.l0=Z.offsetLeft+tx;
+      var bb=parseFloat(getComputedStyle(Z).bottom);drag.b0=isNaN(bb)?16:bb;
+      Z.style.left=drag.l0+'px';Z.style.bottom=drag.b0+'px';
+    }
+    var W=window.innerWidth,H=window.innerHeight,nh=Z.offsetHeight||66;
+    var nl=Math.min(Math.max(0,drag.l0+dx),W-60);
+    var nb=Math.min(Math.max(0,drag.b0-dy),H-nh);
+    Z.style.left=nl+'px';Z.style.bottom=nb+'px';
+  });
+  function endDrag(){
+    if(!drag)return;
+    clearTimeout(lpTimer);
+    var moved=drag.moved,lp=drag.lp;drag=null;
+    if(lp)return;
+    if(moved){Z.classList.add('pinned');try{localStorage.setItem('xsd_cat_pos',JSON.stringify({l:Z.style.left,b:Z.style.bottom}));}catch(e){}return;}
+    var now=Date.now();
+    if(now-lastTap<320){lastTap=0;resetPos();return;}
+    lastTap=now;speak();
+  }
+  Z.addEventListener('pointerup',endDrag);
+  Z.addEventListener('pointercancel',endDrag);
+})();
+
+</script>
+</body>
+</html>
